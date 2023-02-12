@@ -1,0 +1,3 @@
+namespace expansion{
+    void fire();
+}
