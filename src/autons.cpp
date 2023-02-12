@@ -47,7 +47,21 @@ void autonomous_left(){
 
 //---------------------------------------------------RIGHT-AUTONOMOUS-------------------------------------------------------------------------
 void autonomous_right(){
-    chassis.set_drive_pid(27, 90, false, true);
+    //flywheel.move_velocity(600);
+    chassis.set_drive_pid(-23.4, DRIVE_SPEED, true);  // Move 23.4 inches backward
+    chassis.wait_drive(); 
+    chassis.set_turn_pid(90, TURN_SPEED);             // Turn 90 degrees clockwise
+    chassis.wait_drive();
+    chassis.set_drive_pid(-6, DRIVE_SPEED, true);     // Move 5 inches backward
+    chassis.wait_drive();
+    //autonroller();                                    // Claim Roller
+    chassis.wait_drive();
+    chassis.set_drive_pid(10, DRIVE_SPEED, true);     // Move 10 inches forward
+    chassis.wait_drive();
+  
+  //outtakeon();
+  pros::delay(3000);
+  //intakeoff();
 }
 
 

@@ -1,5 +1,5 @@
 #include "main.h"
-
+#include "subsystems/flywheel.hpp"
 //-------------------------------------------CHASSIS-CONSTRUCTOR------------------------------------------------------------------------------------
 Drive chassis (
   {1, -2, 3} //left chassis ports
@@ -8,27 +8,42 @@ Drive chassis (
   ,4.125 // Wheel Diameter
   ,600 // Cartridge RPM
   ,2.333 // External Gear Ratio (MUST BE DECIMAL)
+  //rotational ports if neccesary
 );
+
+//FLYWHEEL OBJECT--------------------
+PID flywheel_PID;
+
 
 //-------------------------------------------PROGRAM-INITIALIZE---------------------------------------------------------------------------------
 void initialize() {
 
 	//Chassis Configurations
 	chassis.toggle_modify_curve_with_controller(true); // Enables modifying the controller curve with buttons on the joysticks
-  	chassis.set_active_brake(0); // Sets the active brake kP. We recommend 0.1.
-  	chassis.set_curve_default(0, 0); // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)  
+  	chassis.set_active_brake(0.5); // Sets the active brake kP. We recommend 0.1.
+  	chassis.set_curve_default(2, 0); // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)  
   	default_constants(); //sets chassis PID values
   	exit_condition_defaults(); //sets chassis PID values 
 	
+	//chassis initialization
+	chassis.initialize();
 	
 	//autonomous selector
+	
 	ez::as::initialize();
 	ez::as::auton_selector.add_autons({
 		Auton("Left autonomous", autonomous_left), // left auton
 		Auton("Right autonomous", autonomous_right), //right auton
 		Auton("Soloawp autonomous juicy lookin ahh", soloawp), //soloawp auton
-		Auton("Skills autonomous", autonomous_skills) //skills
+		//Auton("Skills autonomous", autonomous_skills) //skills
   	});
+
+	//IMU calibration
+	chassis.imu_calibrate();
+
+	//flywheel PID
+	
+	flywheel_PID.set_constants(1,0,4);
 
 }
 
@@ -50,7 +65,12 @@ void disabled() {
 
 //-------------------------------------------COMPETITION-INITIALIZE---------------------------------------------------------------------------------
 void competition_initialize() {
-
+	ez::as::auton_selector.add_autons({
+		Auton("Left autonomous", autonomous_left), // left auton
+		Auton("Right autonomous", autonomous_right), //right auton
+		Auton("Soloawp autonomous juicy lookin ahh", soloawp), //soloawp auton
+		//Auton("Skills autonomous", autonomous_skills) //skills
+  	});
 }
 
 
