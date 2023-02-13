@@ -1,5 +1,11 @@
 #include "main.h"
-#include "subsystems/flywheel.hpp"
+
+
+    /******************************************************************************/
+    /**                              Welcome to 5327X                            **/
+    /**                                                                          **/
+    /**                                    Wauw   								 **/
+    /******************************************************************************/
 //-------------------------------------------CHASSIS-CONSTRUCTOR------------------------------------------------------------------------------------
 Drive chassis (
   {1, -2, 3} //left chassis ports
@@ -12,7 +18,7 @@ Drive chassis (
 );
 
 //FLYWHEEL OBJECT--------------------
-PID flywheel_PID;
+
 
 
 //-------------------------------------------PROGRAM-INITIALIZE---------------------------------------------------------------------------------
@@ -43,7 +49,6 @@ void initialize() {
 
 	//flywheel PID
 	
-	flywheel_PID.set_constants(1,0,4);
 
 }
 
@@ -54,7 +59,8 @@ void initialize() {
 
 //-------------------------------------------COMPETITION-DISABLED---------------------------------------------------------------------------------
 void disabled() {
-
+	//autonomous selector for competition
+	ez::as::auton_selector.call_selected_auton(); 
 }
 
 
@@ -65,6 +71,7 @@ void disabled() {
 
 //-------------------------------------------COMPETITION-INITIALIZE---------------------------------------------------------------------------------
 void competition_initialize() {
+	//autonomous selector for competition
 	ez::as::auton_selector.add_autons({
 		Auton("Left autonomous", autonomous_left), // left auton
 		Auton("Right autonomous", autonomous_right), //right auton
@@ -97,16 +104,20 @@ void autonomous() {
 
 //-----------------------------------------------DRIVER-CONTROL---------------------------------------------------------------------------------
 void opcontrol() {
+	//---------------------------------odometry-------------------------------------------
+	positionTracking();
 	while(true){
 		chassis.tank(); //tank drive
 
 
-		//flywheel -- TUNE ASAP
+		//flywheel 
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
 			flywheel::setTargetSpeed(3600);
+			pros::delay(3000);
 		}
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
 			flywheel::setTargetSpeed(2000);
+			pros::delay(3000);
 		}
 
 		//Intake/Outtake
