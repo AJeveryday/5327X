@@ -2,30 +2,53 @@
 
 
 //CONSTANTS
-#define FLYWHEEL_GEARSET pros::E_MOTOR_GEARSET_18
+#define FLYWHEEL_GEARSET pros::E_MOTOR_GEARSET_06
 #define FLYWHEEL_PORT 19
 
 
 
 
-PID flywheel_PID{1 , 0.003, 4, 100, "flywheel"}; //tune
+double flywheelRatio = 15;
+velPID pid(0.35, 0.05, 0.045, 0.9);
+emaFilter rpmFilter(0.15);
+double motorSlew = 0.7;
+
+double targetRPM = 0;
+double currentRPM = 0;
+double lastPower = 0;
+double motorPower = 0;
 
 namespace flywheel{
 
     double targetSpeed;
-    pros::Motor motor(FLYWHEEL_PORT, FLYWHEEL_GEARSET, true);
+    pros::Motor motor(FLYWHEEL_PORT, true);
 
     //FUNCTIONS
     
     
     void loop(double target_speed){
-        motor.set_brake_mode(MOTOR_BRAKE_COAST);
-        
-        while(true){
-            flywheel_PID.set_target(target_speed);
-            motor = flywheel_PID.compute(motor.get_position());
-
-        }
+        targetRPM = target_speed;
+        while(true) {
+  
+        currentRPM = rpmFilter.filter((motor.get_actual_velocity()) * flywheelRatio);
+  
+        motorPower = pid.calculate(targetRPM, currentRPM);
+  
+        if(motorPower <= 0) motorPower = 0; //Prevent motor from spinning backward
+  
+        //Give the motor a bit of a starting boost
+        if(motorPower > lastPower && lastPower < 10 && motorPower > 10) lastPower = 10;
+  
+        //This slews the motor by limiting the rate of change of the motor speed
+        double increment = motorPower - lastPower;
+        if(std::abs(increment) > motorSlew) motorPower = lastPower + (motorSlew * sgn(increment));
+            lastPower = motorPower;
+  
+        motor.move(motorPower);
+  
+        //std::cout << "RPM: " << currentRPM << " Power: "<< motorPower << " Error: "<< flywheelPID.getError() << "\n";
+        pros::delay(20);
+}
     }
 
     void setTargetSpeed(double speed){

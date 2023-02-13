@@ -47,8 +47,6 @@ void initialize() {
 	//IMU calibration
 	chassis.imu_calibrate();
 
-	//flywheel PID
-	
 
 }
 
