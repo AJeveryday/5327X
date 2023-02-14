@@ -12,7 +12,7 @@ double velPID::calculate(double wantedRPM, double currentRPM) {
 
   m_derivative = (m_Error - m_lastError);
   m_lastError = m_Error;
-  if(m_derivative < 0) m_derivative;
+  if(m_derivative < 0) m_derivative = 0;
   m_derivative = m_dFilter.filter(m_derivative);
 
   double finalPower = (m_Error * m_Kp) + (m_derivative * m_Kd) + (wantedRPM * m_Kf);

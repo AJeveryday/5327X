@@ -45,7 +45,7 @@ double totalDeltaDistR = 0;
 
 //The current angle of the bot (RADIANS)
 double currentAbsoluteOrientation = THETA_START;
-//The previous angle of the bot (RADIANS)
+//The previous angle of the bot (RADIAN S)
 double previousTheta = THETA_START;
 
 //The change in Theta each loop (RADIANS)
@@ -146,3 +146,5 @@ int positionTracking() {
   }
   return xPosGlobal, yPosGlobal;
 }
+
+
