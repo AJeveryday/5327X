@@ -11,6 +11,14 @@ const int SWING_SPEED = 90;
 const int INTAKE_SPEED = 45;
 
 // PID constants
+void wait1(int waitTime) {
+    int t = 0;
+    while(t < waitTime) {
+        t += 2;
+        flywheel::voltageUpdate();
+        pros::delay(20);
+    };
+};
 
 void default_constants()
 {
@@ -27,7 +35,7 @@ void exit_condition_defaults()
 {
   chassis.set_exit_condition(chassis.turn_exit, 100, 3, 500, 7, 500, 500);
   chassis.set_exit_condition(chassis.swing_exit, 100, 3, 500, 7, 500, 500);
-  chassis.set_exit_condition(chassis.drive_exit, 80, 50, 300, 150, 500, 500);
+  chassis.set_exit_condition(chassis.drive_exit, 80, 50, 300, 150, 500, 200);
 }
 
 void modified_exit_condition()
@@ -36,7 +44,7 @@ void modified_exit_condition()
   chassis.set_exit_condition(chassis.swing_exit, 100, 3, 500, 7, 500, 500);
   chassis.set_exit_condition(chassis.drive_exit, 80, 50, 300, 150, 500, 500);
 }
-pros::Motor intake0(15, pros::E_MOTOR_GEARSET_18);
+pros::Motor intake02(12, pros::E_MOTOR_GEARSET_18);
 
 //---------------------------------------------------LEFT-AUTONOMOUS-------------------------------------------------------------------------
 void autonomous_left()
@@ -94,7 +102,6 @@ void autonomous_left()
 
   //*/
 }
-
 //---------------------------------------------------RIGHT-AUTONOMOUS-------------------------------------------------------------------------
 void autonomous_right()
 {
@@ -130,12 +137,12 @@ void autonomous_right()
     chassis.set_turn_pid(45, TURN_SPEED);
     chassis.wait_drive();
     intake::intake_for_time(false, 400);
-  */
+  
   chassis.reset_gyro();
   chassis.reset_drive_sensor();
   chassis.set_angle(-90);
   
-  flywheel::setTargetSpeed(0.93333);
+  
   chassis.set_drive_pid(-20, DRIVE_SPEED, true); // Move 23.4 inches backward
   chassis.wait_drive();
   chassis.set_turn_pid(0, TURN_SPEED); // Turn 90 degrees clockwise
@@ -143,55 +150,175 @@ void autonomous_right()
   chassis.set_drive_pid(-8, DRIVE_SPEED, true); // Move 5 inches backward
   chassis.wait_drive();
 
-  intake::intake_for_time(true, 500); // Claim Roller
-
+  intake::intake_for_time(false, 200); // Claim Roller
+  flywheel::setTargetSpeed(0.9);
+  
   chassis.set_drive_pid(18, DRIVE_SPEED, false, true);
   chassis.wait_drive();
   
   chassis.set_turn_pid(14, TURN_SPEED); // Turn  degrees clockwise
   chassis.wait_drive();
   intake::intake_for_time(false, 300); //
+
   pros::delay(2000);
-  intake::intake_for_time(false, 3000);
-  chassis.set_swing_pid(LEFT_SWING, -50, 90);
-  chassis.wait_drive();
-  intake0.move_voltage(12000);
-  chassis.set_drive_pid(35, DRIVE_SPEED, false, true);
-  chassis.wait_drive();
+  intake::intake_for_time(false, 5000);
+  */
+  //chassis.set_swing_pid(LEFT_SWING, -50, 90);
+  //chassis.wait_drive();
+  //intake0.move_voltage(12000);
+  //chassis.set_drive_pid(35, DRIVE_SPEED, false, true);
+  //chassis.wait_drive();
   
-  flywheel::setTargetSpeed(0.8);
-  pros::delay(2000);
+  //flywheel::setTargetSpeed(0.8);
+  //pros::delay(2000);
   //chassis.set_turn_pid(31, TURN_SPEED);
   
+  //chassis.wait_drive();
+  //pros::delay(2000);
+  //chassis.set_drive_pid(8, DRIVE_SPEED, false, true);
+  //intake::intake_for_time(false, 300); //
+  //pros::delay(900);
+  //intake::intake_for_time(false, 2000);
+  //flywheel::setTargetSpeed(0);
+  chassis.reset_gyro();
+  chassis.reset_drive_sensor();
+  chassis.set_drive_pid(-20, 127, false, true);
   chassis.wait_drive();
-  pros::delay(2000);
-  chassis.set_drive_pid(8, DRIVE_SPEED, false, true);
-  intake::intake_for_time(false, 300); //
-  pros::delay(900);
-  intake::intake_for_time(false, 2000);
-  flywheel::setTargetSpeed(0);
+  chassis.set_turn_pid(90, 127);
+  chassis.wait_drive();
+  chassis.set_drive_pid(-8, 50, false, true);
+  chassis.wait_drive();
+  intake::intake_for_time(false, 300);
+  chassis.set_drive_pid(14, DRIVE_SPEED, false, true);
+  chassis.wait_drive();
+  chassis.set_turn_pid(108,TURN_SPEED);
+
+  intake02.move_voltage(12000);   // gets disc back pls
+  pros::delay(100);
+  flywheel::setTargetSpeed(1); 
+  intake02.move_voltage(0); //imtake off
+  pros::delay(2200);
+
+  intake02.move_voltage(-12000);   // first disc shoots
+  pros::delay(150);
+  intake02.move_voltage(0);
+  flywheel::setTargetSpeed(1);
+  pros::delay(1500); //imtake off
+  intake02.move_voltage(-12000);   // first disc shoots
+  pros::delay(300);
+  intake02.move_voltage(0);
+  flywheel::setTargetSpeed(0.9);
+
+  chassis.set_swing_pid(LEFT_SWING, 45, SWING_SPEED);
+  chassis.wait_drive();
+  intake02.move_voltage(12000);
+  chassis.set_drive_pid(80, 90, false, true);
+  chassis.wait_drive();
+  chassis.set_turn_pid(152,TURN_SPEED);
+  chassis.wait_drive();
+
+  intake02.move_voltage(-12000);   // first disc shoots
+  pros::delay(150);
+  intake02.move_voltage(0);
+
+  pros::delay(500); //imtake off
+  intake02.move_voltage(-12000);   // first disc shoots
+  pros::delay(150); //imtake off
+  intake02.move_voltage(0);   // first disc shoots
+  pros::delay(500); //imtake off
+  intake02.move_voltage(-12000);   // first disc shoots
+
+  
+  
 }
 
 //---------------------------------------------------SOLO-AWP-------------------------------------------------------------------------
 void soloawp()
 {
   chassis.set_drive_pid(-2, 20, false, true);
-  intake::intake_for_time(false, 400); // roller
-  flywheel::setTargetSpeed(3400);      // flywheel on
-
-  // after roller
-  chassis.wait_drive();
+       // flywheel on
+  intake::intake_for_time(false, 300); // claim roller
   chassis.set_drive_pid(10, DRIVE_SPEED, false, true); // forward 10 from roller
+  chassis.wait_drive();
+  intake02.move_voltage(12000);
+  chassis.set_drive_pid(10, 70, false, true);
+  chassis.wait_drive();
+  intake02.move_voltage(0);
+
+  intake02.move_voltage(12000);   // gets disc back pls
+  chassis.set_turn_pid(-5, TURN_SPEED);
+  pros::delay(100);
+  flywheel::setTargetSpeed(1); 
+  intake02.move_voltage(0); //imtake off
+  pros::delay(3000);
+
+  intake02.move_voltage(-12000);   // first disc shoots
+  pros::delay(150);
+  intake02.move_voltage(0);
+  flywheel::setTargetSpeed(1);
+  pros::delay(2000); //imtake off
+  
+  intake02.move_velocity(-12000); //shoots secomd and third disc
+  pros::delay(150);
+  intake02.move_voltage(0);
+  pros::delay(2000);
+
+  
+
+  intake02.move_voltage(12000);
+  chassis.wait_drive();
+  flywheel::setTargetSpeed(0.9); 
+  chassis.set_swing_pid(RIGHT_SWING, 48, SWING_SPEED);
+  chassis.wait_drive();
+
+  chassis.set_drive_pid(50, 80, false, true); // forward 10 from roller
+  chassis.wait_drive();
+  chassis.set_turn_pid(-42, TURN_SPEED);
+  intake02.move_voltage(-12000);
+  intake02.move_voltage(-12000);   // first disc shoots
+  pros::delay(100);
+  intake02.move_voltage(0); //imtake off
+  pros::delay(100);
+  intake02.move_velocity(-12000); //shoots secomd and third disc
+  flywheel::setTargetSpeed(0);
+
+  chassis.set_turn_pid(43, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(83, DRIVE_SPEED, false, true);
+  chassis.wait_drive();
+  chassis.set_turn_pid(-90, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(-12, 127, false, true);
+  chassis.wait_drive();
+
+
+  intake02.move_voltage(-200);  //claim roller
+  pros::delay(50);
+  intake02.move_voltage(0); //imtake off
+  
+  
+
+  
+
+  /*
+  // after roller
   chassis.wait_drive();
   chassis.set_turn_pid(-135, TURN_SPEED); // turn 45 ready for first dash to middle
   chassis.wait_drive();
   chassis.set_drive_pid((-132.4/2), DRIVE_SPEED, false, true); // first dash
   chassis.wait_drive();
-  chassis.set_turn_pid(-90, TURN_SPEED); // angles towards high goal for shooting
+  chassis.set_turn_pid(-42, TURN_SPEED); // angles towards high goal for shooting
+  chassis.wait_drive();
+  chassis.set_drive_pid((10), DRIVE_SPEED, false, true); // first dash
   chassis.wait_drive();
   
-  flywheel::setTargetSpeed(0.8); //shoots
-  pros::delay(2000);
+  intake::intake_for_time(false, 700);
+  chassis.set_swing_pid(RIGHT_SWING, 45, SWING_SPEED);
+  chassis.wait_drive();
+  */
+  /*
+  chassis.wait_drive();
+  
   chassis.set_turn_pid(31, TURN_SPEED);
   chassis.wait_drive();
   chassis.set_turn_pid(-45, TURN_SPEED); // turn 45 prepares for dash to second roller
@@ -201,7 +328,7 @@ void soloawp()
   chassis.set_drive_pid(-5, DRIVE_SPEED, false, true);
   chassis.wait_drive();
   intake::intake_for_time(true, 500); // Claim Roller
-  
+  */
 }
 
 //---------------------------------------------------SKILLS-AUTONOMOUS-------------------------------------------------------------------------

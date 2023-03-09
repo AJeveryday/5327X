@@ -3,7 +3,7 @@
 
 //CONSTANTS
 #define INTAKE_GEARSET pros::E_MOTOR_GEARSET_18
-#define INTAKE_PORT 15
+#define INTAKE_PORT 12
 
 namespace intake{
     //FLYWHEEL MOTOR
@@ -18,7 +18,7 @@ namespace intake{
         }else{
             motoruwu.move_voltage(-12000);
             pros::delay(time);
-            motoruwu.move_velocity(0);
+            motoruwu.move_voltage(0);
         }
     }
     
